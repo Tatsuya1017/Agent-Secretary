@@ -1,13 +1,14 @@
 import { SchemaType } from "@google/generative-ai";
 import { completeTask, createTask, deleteTask, getTask, listTasks } from "../../db/repositories/taskRepository";
 import { createReminder } from "../../db/repositories/reminderRepository";
+import { jstTimeOnDate, onlyFuture } from "../../util/jstTime";
 import type { ToolModule } from "./types";
 
 export const taskTools: ToolModule = {
   declarations: [
     {
       name: "create_task",
-      description: "タスクを追加する。期限(due_at)を指定すると、当日の連動リマインダーが自動で作られる",
+      description: "タスクを追加する。期限(due_at)を指定すると、期限日の朝9時と15時に連動リマインダーが自動で作られる",
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
@@ -56,7 +57,10 @@ export const taskTools: ToolModule = {
       const task = await createTask(ctx.userId, String(args.title), dueAt);
 
       if (dueAt) {
-        await createReminder(ctx.userId, `タスク期限: ${task.title}`, dueAt, "task", task.id);
+        const reminderTimes = onlyFuture([jstTimeOnDate(dueAt, 9), jstTimeOnDate(dueAt, 15)]);
+        for (const t of reminderTimes) {
+          await createReminder(ctx.userId, `タスク期限: ${task.title}`, t, "task", task.id);
+        }
       }
 
       return { task };

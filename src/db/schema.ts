@@ -74,7 +74,7 @@ export const reminders = pgTable(
     text: text("text").notNull(),
     dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
     status: varchar("status", { length: 16 }).notNull().default("pending"), // 'pending' | 'sent' | 'cancelled'
-    source: varchar("source", { length: 16 }).notNull().default("manual"), // 'manual' | 'task'
+    source: varchar("source", { length: 16 }).notNull().default("manual"), // 'manual' | 'task' | 'schedule'
     sourceTaskId: integer("source_task_id").references(() => tasks.id),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     sentAt: timestamp("sent_at", { withTimezone: true }),

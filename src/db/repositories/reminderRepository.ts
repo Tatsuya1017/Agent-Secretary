@@ -8,7 +8,7 @@ export async function createReminder(
   userId: number,
   text: string,
   dueAt: Date,
-  source: "manual" | "task" = "manual",
+  source: "manual" | "task" | "schedule" = "manual",
   sourceTaskId?: number
 ): Promise<Reminder> {
   const [created] = await db
