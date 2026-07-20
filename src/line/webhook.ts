@@ -38,7 +38,13 @@ async function handleEvent(event: WebhookEvent): Promise<void> {
   const lineUserId = event.source.userId;
   if (!lineUserId) return;
 
-  const replyText = await runAgentTurn(lineUserId, event.message.text);
+  let replyText: string;
+  try {
+    replyText = await runAgentTurn(lineUserId, event.message.text);
+  } catch (err) {
+    logger.error("runAgentTurnに失敗しました", err);
+    replyText = "ちょっと調子が悪いみたい…少し待ってからもう一回送ってみて？";
+  }
   await replyOrPush(event.replyToken, lineUserId, replyText);
 }
 

@@ -6,6 +6,7 @@ import { toolDeclarations, callTool } from "./tools";
 import type { ToolContext } from "./tools/types";
 import { findOrCreateUserByLineId } from "../db/repositories/userRepository";
 import { logger } from "../util/logger";
+import { withRetry } from "../util/retry";
 
 const MAX_TOOL_ITERATIONS = 5;
 
@@ -18,7 +19,7 @@ export async function runAgentTurn(lineUserId: string, userText: string): Promis
   const model = getModel(toolDeclarations, buildSystemPrompt(new Date()));
   const chat = model.startChat({ history });
 
-  let result = await chat.sendMessage(userText);
+  let result = await withRetry(() => chat.sendMessage(userText));
 
   for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
     const functionCalls = result.response.functionCalls();
@@ -39,7 +40,7 @@ export async function runAgentTurn(lineUserId: string, userText: string): Promis
       })
     );
 
-    result = await chat.sendMessage(responseParts);
+    result = await withRetry(() => chat.sendMessage(responseParts));
   }
 
   const finalText = result.response.text() || "うまく応答できなかった…もう一回言ってみて？";
