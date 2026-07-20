@@ -16,34 +16,44 @@ export async function runAgentTurn(lineUserId: string, userText: string): Promis
   await saveMessage(user.id, "user", userText);
 
   const ctx: ToolContext = { userId: user.id, lineUserId };
-  const model = getModel(toolDeclarations, buildSystemPrompt(new Date()));
-  const chat = model.startChat({ history });
 
-  let result = await withRetry(() => chat.sendMessage(userText));
+  let finalText: string;
+  try {
+    const model = getModel(toolDeclarations, buildSystemPrompt(new Date()));
+    const chat = model.startChat({ history });
 
-  for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
-    const functionCalls = result.response.functionCalls();
-    if (!functionCalls || functionCalls.length === 0) break;
+    let result = await withRetry(() => chat.sendMessage(userText));
 
-    const responseParts: Part[] = await Promise.all(
-      functionCalls.map(async (call) => {
-        let output: unknown;
-        try {
-          output = await callTool(call.name, (call.args ?? {}) as Record<string, unknown>, ctx);
-        } catch (err) {
-          logger.error(`ツール実行に失敗しました: ${call.name}`, err);
-          output = { error: "ツールの実行に失敗しました" };
-        }
-        return {
-          functionResponse: { name: call.name, response: output as object },
-        };
-      })
-    );
+    for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
+      const functionCalls = result.response.functionCalls();
+      if (!functionCalls || functionCalls.length === 0) break;
 
-    result = await withRetry(() => chat.sendMessage(responseParts));
+      const responseParts: Part[] = await Promise.all(
+        functionCalls.map(async (call) => {
+          let output: unknown;
+          try {
+            output = await callTool(call.name, (call.args ?? {}) as Record<string, unknown>, ctx);
+          } catch (err) {
+            logger.error(`ツール実行に失敗しました: ${call.name}`, err);
+            output = { error: "ツールの実行に失敗しました" };
+          }
+          return {
+            functionResponse: { name: call.name, response: output as object },
+          };
+        })
+      );
+
+      result = await withRetry(() => chat.sendMessage(responseParts));
+    }
+
+    finalText = result.response.text() || "うまく応答できなかった…もう一回言ってみて？";
+  } catch (err) {
+    // ここで応答を保存しないと会話履歴のuser/model交互構造が崩れ、
+    // 次回のstartChatが「First content should be with role 'user'」で失敗し続ける
+    logger.error("Gemini呼び出しに失敗しました", err);
+    finalText = "ちょっと調子が悪いみたい…少し待ってからもう一回送ってみて？";
   }
 
-  const finalText = result.response.text() || "うまく応答できなかった…もう一回言ってみて？";
   await saveMessage(user.id, "assistant", finalText);
   return finalText;
 }
