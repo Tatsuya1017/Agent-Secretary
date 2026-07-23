@@ -1,4 +1,4 @@
-import { SchemaType } from "@google/generative-ai";
+import { Type } from "@google/genai";
 import { createCalendarEvent, listCalendarEvents } from "../../google/calendarClient";
 import { buildAuthUrl } from "../../auth/googleAuth";
 import { createReminder } from "../../db/repositories/reminderRepository";
@@ -12,20 +12,20 @@ export const calendarTools: ToolModule = {
       description:
         "Googleカレンダーに新しい予定を登録する。登録すると当日の朝9時（時刻指定ありの予定は開始1時間前にも）に自動でリマインドする",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          title: { type: SchemaType.STRING, description: "予定のタイトル" },
+          title: { type: Type.STRING, description: "予定のタイトル" },
           start_at: {
-            type: SchemaType.STRING,
+            type: Type.STRING,
             description:
               "開始日時のISO8601文字列（例: 2026-07-20T19:00:00+09:00）。all_day=trueの場合はYYYY-MM-DD形式の日付のみ",
           },
           end_at: {
-            type: SchemaType.STRING,
+            type: Type.STRING,
             description: "終了日時のISO8601文字列。省略時は開始の1時間後（all_day=trueの場合はYYYY-MM-DD、省略時は開始の翌日）",
           },
-          location: { type: SchemaType.STRING, description: "場所（任意）" },
-          all_day: { type: SchemaType.BOOLEAN, description: "終日の予定かどうか（省略時はfalse）" },
+          location: { type: Type.STRING, description: "場所（任意）" },
+          all_day: { type: Type.BOOLEAN, description: "終日の予定かどうか（省略時はfalse）" },
         },
         required: ["title", "start_at"],
       },
@@ -34,10 +34,10 @@ export const calendarTools: ToolModule = {
       name: "list_calendar_events",
       description: "Googleカレンダーの予定を一覧取得する",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          from: { type: SchemaType.STRING, description: "検索範囲の開始日時ISO8601。省略時は現在時刻" },
-          to: { type: SchemaType.STRING, description: "検索範囲の終了日時ISO8601。省略時はfromの7日後" },
+          from: { type: Type.STRING, description: "検索範囲の開始日時ISO8601。省略時は現在時刻" },
+          to: { type: Type.STRING, description: "検索範囲の終了日時ISO8601。省略時はfromの7日後" },
         },
       },
     },

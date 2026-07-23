@@ -1,4 +1,4 @@
-import { SchemaType } from "@google/generative-ai";
+import { Type } from "@google/genai";
 import { cancelReminder, createReminder, listReminders } from "../../db/repositories/reminderRepository";
 import type { ToolModule } from "./types";
 
@@ -8,10 +8,10 @@ export const reminderTools: ToolModule = {
       name: "create_reminder",
       description: "単発のリマインダーを作成する",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          text: { type: SchemaType.STRING, description: "リマインド内容" },
-          due_at: { type: SchemaType.STRING, description: "通知する日時のISO8601文字列" },
+          text: { type: Type.STRING, description: "リマインド内容" },
+          due_at: { type: Type.STRING, description: "通知する日時のISO8601文字列" },
         },
         required: ["text", "due_at"],
       },
@@ -19,15 +19,15 @@ export const reminderTools: ToolModule = {
     {
       name: "list_reminders",
       description: "未通知のリマインダー一覧を取得する",
-      parameters: { type: SchemaType.OBJECT, properties: {} },
+      parameters: { type: Type.OBJECT, properties: {} },
     },
     {
       name: "cancel_reminder",
       description: "リマインダーをキャンセルする",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          reminder_id: { type: SchemaType.NUMBER, description: "リマインダーID" },
+          reminder_id: { type: Type.NUMBER, description: "リマインダーID" },
         },
         required: ["reminder_id"],
       },

@@ -1,4 +1,4 @@
-import type { FunctionDeclaration } from "@google/generative-ai";
+import type { FunctionDeclaration } from "@google/genai";
 import { calendarTools } from "./calendarTools";
 import { taskTools } from "./taskTools";
 import { memoTools } from "./memoTools";

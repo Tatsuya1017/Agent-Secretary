@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import type { Content } from "@google/generative-ai";
+import type { Content } from "@google/genai";
 import { db } from "../db/client";
 import { messages } from "../db/schema";
 

@@ -1,4 +1,4 @@
-import { SchemaType } from "@google/generative-ai";
+import { Type } from "@google/genai";
 import { completeTask, createTask, deleteTask, getTask, listTasks } from "../../db/repositories/taskRepository";
 import { createReminder } from "../../db/repositories/reminderRepository";
 import { jstTimeOnDate, onlyFuture } from "../../util/jstTime";
@@ -10,10 +10,10 @@ export const taskTools: ToolModule = {
       name: "create_task",
       description: "タスクを追加する。期限(due_at)を指定すると、期限日の朝9時と15時に連動リマインダーが自動で作られる",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          title: { type: SchemaType.STRING, description: "タスクの内容" },
-          due_at: { type: SchemaType.STRING, description: "期限のISO8601日時（任意）" },
+          title: { type: Type.STRING, description: "タスクの内容" },
+          due_at: { type: Type.STRING, description: "期限のISO8601日時（任意）" },
         },
         required: ["title"],
       },
@@ -22,9 +22,9 @@ export const taskTools: ToolModule = {
       name: "list_tasks",
       description: "タスクの一覧を取得する",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          status: { type: SchemaType.STRING, description: "'open'(未完了) または 'done'(完了済み)。省略時は全件" },
+          status: { type: Type.STRING, description: "'open'(未完了) または 'done'(完了済み)。省略時は全件" },
         },
       },
     },
@@ -32,9 +32,9 @@ export const taskTools: ToolModule = {
       name: "complete_task",
       description: "タスクを完了にする",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          task_id: { type: SchemaType.NUMBER, description: "タスクID" },
+          task_id: { type: Type.NUMBER, description: "タスクID" },
         },
         required: ["task_id"],
       },
@@ -43,9 +43,9 @@ export const taskTools: ToolModule = {
       name: "delete_task",
       description: "タスクを削除する",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          task_id: { type: SchemaType.NUMBER, description: "タスクID" },
+          task_id: { type: Type.NUMBER, description: "タスクID" },
         },
         required: ["task_id"],
       },

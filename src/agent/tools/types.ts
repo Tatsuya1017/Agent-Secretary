@@ -1,4 +1,4 @@
-import type { FunctionDeclaration } from "@google/generative-ai";
+import type { FunctionDeclaration } from "@google/genai";
 
 export interface ToolContext {
   userId: number;

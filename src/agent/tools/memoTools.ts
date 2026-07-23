@@ -1,4 +1,4 @@
-import { SchemaType } from "@google/generative-ai";
+import { Type } from "@google/genai";
 import { addMemo, listMemos, searchMemos } from "../../db/repositories/memoRepository";
 import type { ToolModule } from "./types";
 
@@ -8,10 +8,10 @@ export const memoTools: ToolModule = {
       name: "add_memo",
       description: "メモを追加する",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          content: { type: SchemaType.STRING, description: "メモの内容" },
-          title: { type: SchemaType.STRING, description: "メモのタイトル（任意）" },
+          content: { type: Type.STRING, description: "メモの内容" },
+          title: { type: Type.STRING, description: "メモのタイトル（任意）" },
         },
         required: ["content"],
       },
@@ -19,15 +19,15 @@ export const memoTools: ToolModule = {
     {
       name: "list_memos",
       description: "メモの一覧を取得する（新しい順）",
-      parameters: { type: SchemaType.OBJECT, properties: {} },
+      parameters: { type: Type.OBJECT, properties: {} },
     },
     {
       name: "search_memos",
       description: "メモをキーワードで検索する",
       parameters: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          query: { type: SchemaType.STRING, description: "検索キーワード" },
+          query: { type: Type.STRING, description: "検索キーワード" },
         },
         required: ["query"],
       },
