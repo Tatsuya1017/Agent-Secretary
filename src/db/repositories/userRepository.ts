@@ -37,3 +37,11 @@ export async function saveGoogleTokens(
     })
     .where(eq(users.id, userId));
 }
+
+/** refresh_tokenが失効(invalid_grant)した場合に呼ぶ。次回は未連携扱いとなり、再認可を促せる */
+export async function clearGoogleTokens(userId: number): Promise<void> {
+  await db
+    .update(users)
+    .set({ googleRefreshToken: null, googleAccessToken: null, googleTokenExpiry: null })
+    .where(eq(users.id, userId));
+}
